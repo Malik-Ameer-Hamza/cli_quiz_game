@@ -19,6 +19,8 @@ Show off your knowledge and see how many you can get right!
 ### See your score: 
 Find out your percentage and celebrate your achievement (or strategize for next time)!
 
+## Trivia API
+https://opentdb.com/api_config.php
 
 ## Installation:
 - Make sure you have Node.js and npm installed (https://nodejs.org/).
