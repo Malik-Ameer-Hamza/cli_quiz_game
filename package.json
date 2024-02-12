@@ -1,6 +1,6 @@
 {
   "name": "ameer-quiz",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "",
   "main": "quiz.js",
   "type": "module",
