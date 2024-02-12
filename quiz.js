@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import inquirer from "inquirer";
 import chalk from "chalk";
 import showBanner from "node-banner";
@@ -117,7 +118,7 @@ async function showResult(correcAnswer, userName, questionsNo, category, difficu
     let person = percentage >= 50 ? "Champion" : "Loser";
     console.log(`\n`);
     console.log(chalk.bgRed.whiteBright(`                 Your Scorecard                `));
-    console.log(`\t     Scorecard of a ${person}: `);
+    console.log(`\t      Scorecard of a ${person}: `);
     console.log(chalk.whiteBright(`--------------------------------------`));
     console.log(chalk.rgb(255, 142, 133)(` Name : ${chalk.whiteBright(userName)}`));
     console.log(chalk.whiteBright(`--------------------------------------`));
