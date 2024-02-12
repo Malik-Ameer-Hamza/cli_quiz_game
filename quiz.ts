@@ -158,10 +158,14 @@ async function startQuiz(data: Question[], questions: number): Promise<number> {
 
 
 // Display quiz results
-async function showResult(correcAnswer: number, userName: string, questionsNo: number, category: string, difficultyConsole: string) {
-    let percentage = Math.floor((correcAnswer / questionsNo) * 100);
-    let person = percentage >= 50 ? "Champion" : "Loser"
-   
+async function showResult(correctAnswer: number, userName: string, questionsNo: number, category: string, difficultyConsole: string) {
+    const spinner = createSpinner('Compiling Result').start()
+    await delay()
+
+    let percentage = Math.floor((correctAnswer / questionsNo) * 100);
+    let person = percentage >= 50 ? "Champion" : "Loser";
+    spinner.success({ text: 'Result Compiled' });
+
     console.log(`\n`);
     console.log(chalk.bgRed.whiteBright(`                 Your Scorecard                `))
     console.log(`\t      Scorecard of a ${person}: `);
@@ -174,31 +178,52 @@ async function showResult(correcAnswer: number, userName: string, questionsNo: n
     console.log(chalk.whiteBright(`--------------------------------------`))
     console.log(chalk.rgb(255, 142, 133)(` Total MCQs : ${chalk.whiteBright(questionsNo)}`))
     console.log(chalk.whiteBright(`--------------------------------------`))
-    console.log(chalk.rgb(255, 142, 133)(` Correct Answers : ${chalk.whiteBright(correcAnswer + " out of " + questionsNo)}`))
+    console.log(chalk.rgb(255, 142, 133)(` Correct Answers : ${chalk.whiteBright(correctAnswer + " out of " + questionsNo)}`))
     console.log(chalk.whiteBright(`--------------------------------------`))
-    console.log(chalk.rgb(255, 142, 133)(` Percentage : ${chalk.whiteBright(percentage +"% out of 100%" )}`))
+    console.log(chalk.rgb(255, 142, 133)(` Percentage : ${chalk.whiteBright(percentage + "% out of 100%")}`))
     console.log(chalk.whiteBright(`--------------------------------------`))
 
 
 }
 
 
+async function reattemptQuiz(): Promise<boolean> {
+    let { again } = await inquirer.prompt([{
+        name: "again",
+        type: "confirm",
+        message: "Do you want to attempt quiz again? "
+    }]);
+
+    return again;
+}
+
 // execute the entire quiz flow asynchronously.
 (async () => {
     await displayBanner();
     await delay(1000);
 
-    let userName = await getUserName();
-    let { userCategory, categoryName } = await selectCategory();
-    let difficultyConsole = await difficultyLevel();
-    let questionsNo = await noOfQuestions();
+    while (true) {
+        let userName = await getUserName();
+        let { userCategory, categoryName } = await selectCategory();
+        let difficultyConsole = await difficultyLevel();
+        let questionsNo = await noOfQuestions();
 
-    let spinner = createSpinner("Loading MCQs...").start();
-    let data = await dataFetching(questionsNo, userCategory, difficultyConsole);
-    await delay(1000);
-    spinner.success({ text: 'MCQs Loaded' });
+        let spinner = createSpinner("Loading MCQs...").start();
+        let data = await dataFetching(questionsNo, userCategory, difficultyConsole);
+        await delay(1000);
+        spinner.success({ text: 'MCQs Loaded' });
 
-    let userCorrectAnswer = await startQuiz(data, questionsNo);
-    await showResult(userCorrectAnswer, userName, questionsNo, categoryName, difficultyConsole);
+        let userCorrectAnswer = await startQuiz(data, questionsNo);
+        await showResult(userCorrectAnswer, userName, questionsNo, categoryName, difficultyConsole);
+
+        let value = await reattemptQuiz();
+
+        if (!value) {
+            console.log(chalk.whiteBright.bold.greenBright(`\n_x_x_x_x_x_x_x_x_x_x_x_x_x_x_x_x_x_x_x_x_x_x_x_x_x_x_x_x_x_x_x_x_x_x_x_x_x_x_x_x_x_x_x_x_x_x_\n`))
+            break;
+        }
+        console.log(chalk.whiteBright.bold.blue(`\n_x_x_x_x_x_x_x_x_x_x_x_x_x_x_x_x_x_x_x_x_x_x_x_x_x_x_x_x_x_x_x_x_x_x_x_x_x_x_x_x_x_x_x_x_x_x_\n`))
+
+    }
 
 })();
